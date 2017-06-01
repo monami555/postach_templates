@@ -12,11 +12,23 @@
         | {{ site.name }}
     </title>
 
+
     {{ header_meta }}
 
     <!-- css -->
-    <link rel="stylesheet" type="text/css" href="{{ static('fonts/symbolset/ss-social.css') }}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ static('fonts/symbolset/ss-social.css') }}">-->
     <link href="{{ assets('css/style.css') }}" rel="stylesheet" />
+    <style>
+         body{ font-weight:200;font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:0.7em;line-height:1.3;}
+         .post-date{ font-family:Tahoma, Geneva, sans-serif;font-size:1em; font-weight:500;}
+         h2{ font-family:Tahoma, Geneva, sans-serif;font-size:1.5em;  font-weight:500;padding-top:0px!important;line-height:1.3;}
+         h1{ font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:1.8em; font-weight:500;padding-bottom:0px!important;}
+    .post-content{padding:15px!important;}
+
+
+
+
+    </style>
 
     {% if site.analytics %}
     <script>
@@ -40,16 +52,10 @@
 {% else %}
 <div class="wrap">
     <header class="header">
-        <div class="avatar">
-            <a href="/"><img src="{{ site.avatar }}" class="img-circle" alt="{{ site.author }}" /></a>
-        </div>
         <div class="nav-logo">
-            <div class="logo">
-                <h1><a href="/" rel="home">{{ site.name }}</a></h1>
-            </div>
+            <h1><a href="/" rel="home">{{ site.name }}</a></h1>
             <nav id="nav">
                 <ul>
-                    <li><a href="/">Home</a></li>
                     {% if pages %}
                     {% for page in pages %}
                     <li><a href="{{ page.url }}" class="{{ set_active(page.url) }}">{{ page.title }}</a></li>
@@ -57,43 +63,6 @@
                     {% endif %}
                 </ul>
             </nav>
-        </div>
-        <div class="social-icons">
-            <ul>
-                {% if site.twitter %}
-                <li>
-                    <a href="{{ site.twitter }}" title="Twitter" target="_blank">
-                        <i class="ss-icon">twitter</i>
-                    </a>
-                </li>
-                {% endif %}
-                {% if site.facebook %}
-                <li>
-                    <a href="{{ site.facebook }}" title="Facebook" target="_blank">
-                        <i class="ss-icon">facebook</i>
-                    </a>
-                </li>
-                {% endif %}
-                {% if site.googleplus %}
-                <li>
-                    <a href="{{ site.googleplus }}?rel=author" title="Google+" target="_blank">
-                        <i class="ss-icon">googleplus</i>
-                    </a>
-                </li>
-                {% endif %}
-                {% if site.linkedin %}
-                <li>
-                    <a href="{{ site.linkedin }}" title="LinkedIn" target="_blank">
-                        <i class="ss-icon">linkedin</i>
-                    </a>
-                </li>
-                {% endif %}
-                <li>
-                    <a href="{{ site.atom_url }}" title="RSS" target="_blank">
-                        <i class="ss-icon">rss</i>
-                    </a>
-                </li>
-            </ul>
         </div>
     </header>
 
@@ -108,6 +77,7 @@
         <section itemscope itemtype="http://schema.org/Blog" class="posts">
             {% for post in posts %}
             <article itemprop="blogPosts" itemscope itemtype="http://schema.org/BlogPosting" class="blog-post">
+
                 {% if post.photos %}
                 {% for photo in post.photos %}
                 {% if loop.index == 1 %}
@@ -129,6 +99,7 @@
                 {% endfor %}
                 {% endif %}
                 <div class="post-content">
+
                     <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
                     <p class="post-date"><time datetime="{{ post.created_at }}">{{ post.created_at|date_format }}</time></p>
                     {% if post.tags and not post.photos %}
@@ -136,7 +107,6 @@
                     {% endif %}
                     {% if post.content|striptags|wordcount > 0 %}
                     <p>{{ post.content|striptags|truncate(200) }}</p>
-                    <p class="post-link"><a href="{{ post.url }}">View more &rarr;</a></p>
                     {% endif %}
                 </div>
             </article>
@@ -158,6 +128,7 @@
             <section class="content">
 
                 <div class="post-content" data-type-cleanup="true">
+                    <a href="/" rel="home">[Back]</a>
                     <header>
                         <h1>{{ post.title }}</h1>
                     </header>
