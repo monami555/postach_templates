@@ -10,14 +10,20 @@
         {% endif %}
         | {{ site.name }}
     </title>
-    a
+
     {{ header_meta }}
 
     <link href="{{ assets('css/style.css') }}" rel="stylesheet">
 
     <!--[if IE 7]>
-    <link href="http://postachio-static.s3-website-us-east-1.amazonaws.com/libs/fontawesome/css/font-awesome-ie7.min.css" rel="stylesheet">
+    <link href="http://postachio-static.s3-website-us-east-1.amazonaws.com/fonts/fontawesome/css/font-awesome-ie7.min.css" rel="stylesheet">
     <![endif]-->
+
+    <style>
+    body {
+        font-family:"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+    }
+    </style>
 
     <!--
     <style>
@@ -62,7 +68,7 @@
     <div class="navbar-inner">
         <div class="container">
             <div class="row">
-                <div class="span10 offset1">
+                <div class="span12">
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -79,6 +85,12 @@
                             <li><a href="{{ page.url }}" class="{{ set_active(page.url) }}">{{ page.title }}</a></li>
                             {% endfor %}
                             {% endif %}
+                            <li><a href="http://siteInPl">
+                                <img width=25 src="https://cdn2.iconfinder.com/data/icons/flags/flags/48/united-kingdom-great-britain.png">
+                            </a></li>
+                            <!--<li><a href="http://siteInEn">
+                                <img width=25 src="https://cdn1.iconfinder.com/data/icons/famfamfam_flag_icons/pl.png">
+                            </a></li>-->
                         </ul>
                     </div>
                     {% endif %}
@@ -91,7 +103,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="span6 offset1">
+        <div class="span8">
 
             {% if is_home or is_tag %}
 
@@ -105,12 +117,31 @@
             {% if posts %}
             {% for post in posts %}
             <div class="row post">
-                <div class="span6">
+                <div class="span8">
                     <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
                     <p class="muted">Posted on {{ post.created_at|format_date }}</p>
 
                     <div class="post-content" data-type-cleanup="true">
                         {{ post.content }}
+                        {% if post.photos %}
+                        {% for photo in post.photos %}
+                        {% if loop.index == 1 %}
+                        <div class="post-image">
+                            {% if post.type == 'link' %}
+                            <a href="{{ post.link_url }}" target="_blank">
+                                {% else %}
+                                <a href="{{ post.url }}">
+                                    {% endif %}
+                                    {% if photo %}
+                                    <img src="{{ photo.width_600 }}" style="width:30%!important;"/>
+                                    {% else %}
+                                    <img src="http://placehold.it/400x300/0eafff/ffffff.png" alt="" />
+                                    {% endif %}
+                                </a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
                     </div>
 
                 </div>
@@ -133,7 +164,11 @@
 
             <div class="post">
                 <h1>{{ post.title }}</h1>
-                <p class="muted">Posted on {{ post.created_at|format_date }}</p>
+                <p class="muted">Posted on {{ post.created_at|format_date }}
+                                 {% if post.created_at|format_date!=post.updated_at|format_date %}
+                                 | updated on {{ post.updated_at|format_date }}
+                                 {% endif %}
+                </p>
 
                 <div class="post-content" data-type-cleanup="true">
                     {{ post.content }}
@@ -226,50 +261,36 @@
         </div>
 
         {% if not is_login %}
-        <span class="span3 offset1">
-            <div class="bio">
+
+        <span class="span4">
+            <a href="{{ site.atom_url }}" title="RSS" target="_blank" style="float:right">
+              <i class="icon-rss"></i> RSS
+            </a>
+
+            <div class="bio" style="padding:45px 20px 20px 20px;">
               <img class="avatar" src="{{ site.avatar }}" alt="{{ site.author }}" />
               {% if site.bio %}<p>{{ site.bio }}</p>{% endif %}
-              <p>{{ theme.social.follow }}</p>
-              <ul class="unstyled social">
-                {% if site.twitter %}
-                <li>
-                  <a href="{{ site.twitter }}" title="Twitter" target="_blank">
-                    <i class="icon-twitter"></i> Twitter
-                  </a>
-                </li>
-                {% endif %}
-
-                {% if site.facebook %}
-                <li>
-                  <a href="{{ site.facebook }}" title="Facebook" target="_blank">
-                    <i class="icon-facebook-sign"></i> Facebook
-                  </a>
-                </li>
-                {% endif %}
-
-                {% if site.googleplus %}
-                <li>
-                  <a href="{{ site.googleplus }}?rel=author" title="Google+" target="_blank">
-                    <i class="icon-google-plus"></i> Google+
-                  </a>
-                </li>
-                {% endif %}
-
-                {% if site.linkedin %}
-                <li>
-                  <a href="{{ site.linkedin }}" title="LinkedIn" target="_blank">
-                    <i class="icon-linkedin"></i> LinkedIn
-                  </a>
-                </li>
-                {% endif %}
-                <li>
-                  <a href="{{ site.atom_url }}" title="RSS" target="_blank">
-                    <i class="icon-rss"></i> RSS
-                  </a>
-                </li>
-              </ul>
             </div>
+
+            {% if posts %}
+              {% for year, items in sort_by_year(posts) %}
+                 <header>
+                    <h3 class="title">{{ year }}</h3>
+                 </header>
+                 {% for post in items %}
+            	  <article itemscope itemtype="http://schema.org/Article">
+                    <time datetime="{{ post.created_at }}">{{ post.created_at.strftime('%d %b') }}</time> &rsaquo; <a href="{{ post.url }}" class="permalink">{{ post.title|truncate(30) }}</a>
+                  </article>
+                  {% endfor %}
+              {% endfor %}
+            {% endif %}
+            {% if pagination %}
+              <div class="pagination">
+                {% if pagination.prev %}<a href="{{ pagination.prev }}" class="post-prev">&larr; Previous Posts</a>{% endif %}
+                {% if pagination.next %}<a href="{{ pagination.next }}" class="post-next">More Posts &rarr;</a>{% endif %}
+              </div>
+            {% endif %}
+            <hr/>
 
             {% if site.tags %}
             <ul class="tags">
@@ -278,12 +299,27 @@
               {% endfor %}
             </ul>
             {% endif %}
+
+            <!-- google custom search -->
+            <script>
+                  (function() {
+                    var cx = '015207133879892116720:67u2seraofs';
+                    var gcse = document.createElement('script');
+                    gcse.type = 'text/javascript';
+                    gcse.async = true;
+                    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(gcse, s);
+                  })();
+            </script>
+            <gcse:search></gcse:search>
+
           </span>
         {% endif %}
     </div>
 
     <div class="row">
-        <div class="span10 offset1">
+        <div class="span12">
             <footer>
                 &copy; <a href="/">{{ site.name }}</a>. Powered by <a href="http://postach.io" target="_blank">Postach.io</a>
                 {% if not is_login %}
