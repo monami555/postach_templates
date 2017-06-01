@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!--
+
+This is customized in a way that the tiles correspond to tags not to posts, to have more categorisation.
+
+It is expected that each post has exactly 1 tag (=category).
+
+There is a mechanism to display photo for each tag, by setting the site's bio to a JSON that maps each tag to image URL.
+
+-->
 <html prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#">
 <head>
     <meta charset="utf-8">
@@ -164,10 +173,21 @@
                             <h1>
                                 <a href="/tag/{{ tag.name }}">{{ tag|format_tag(False, True) }}</a>
                             </h1>
+                            <a href="/tag/{{ tag.name }}" >
+                                <img id="link_to_{{tag.name}}" src=""/>
+                            </a>
                         </div>
                     </article>
                 </div>
                 {% endfor %}
+
+                <!-- photos for tags are taken from site's bio, it should be a JSON that maps tag to image URL -->
+                <script type="text/javascript">
+                    var links = JSON.parse('{{site.bio}}');
+                    {% for tag in site.tags %}
+                      document.getElementById('link_to_{{tag.name}}').src = links["{{tag.name}}"];
+                    {% endfor %}
+                </script>
 
             {% endif %}
 
