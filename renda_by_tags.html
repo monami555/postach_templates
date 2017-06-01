@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <!--
 
-This is customized in a way that the tiles correspond to tags not to posts, to have more categorisation.
+This is customized in a way that the tiles correspond to tags not to posts, to have more categorisation (tag=category).
 
-It is expected that each post has exactly 1 tag (=category).
-
-There is a mechanism to display photo for each tag, by setting the site's bio to a JSON that maps each tag to image URL.
+There is a mechanism to display photo for each tag, by setting the site's bio to a JSON that maps each tag to image
+URL (has to be in 1 line, no newlines!).
 
 -->
 <html prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#">
@@ -174,14 +173,15 @@ There is a mechanism to display photo for each tag, by setting the site's bio to
                                 <a href="/tag/{{ tag.name }}">{{ tag|format_tag(False, True) }}</a>
                             </h1>
                             <a href="/tag/{{ tag.name }}" >
-                                <img id="link_to_{{tag.name}}" src=""/>
+                                <img id="link_to_{{tag.name}}" src="" width=70%/>
                             </a>
                         </div>
                     </article>
                 </div>
                 {% endfor %}
 
-                <!-- photos for tags are taken from site's bio, it should be a JSON that maps tag to image URL -->
+                <!-- photos for tags are taken from site's bio, it should be a JSON that maps tag to image URL
+                 (has to be in 1 line, no newlines!) -->
                 <script type="text/javascript">
                     var links = JSON.parse('{{site.bio}}');
                     {% for tag in site.tags %}
@@ -205,18 +205,12 @@ There is a mechanism to display photo for each tag, by setting the site's bio to
 
     {% elif post %}
 
-    {% if post.tags %}
-        {% for tag in post.tags %}
-        <header>
 
-            <h1>{{ tag|format_tag(False, True) }}</h1>
+        <header>
             <a href="javascript:history.go(-1);" class="prev">
                 << Back
             </a>
-
         </header>
-        {% endfor %}
-    {% endif %}
 
     <article class="blog-post single">
         <div class="blog-post-body">
@@ -227,8 +221,8 @@ There is a mechanism to display photo for each tag, by setting the site's bio to
                 {% endif %}
                 <span><i class="fa fa-clock-o"></i>{{ post.created_at|format_date }}</span>
             </div>
-            <p>{{ post.content }}</p>
         </div>
+        <p>{{ post.content }}</p>
     </article>
 
     {% if site.disqus %}
