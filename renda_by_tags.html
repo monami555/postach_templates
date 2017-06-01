@@ -89,71 +89,87 @@
 <div class="container">
 
     <header>
+        {% if is_tag %}
+        <h1>{{ tag|format_tag(False, True) }}</h1>
         <a href="/">
-            <img class="avatar" src="{{ site.avatar }}" alt="{{ site.author }}" />
+             << Home
         </a>
+        {% endif %}
     </header>
 
     {% if is_home %}
     <section class="main-slider">
         <ul class="bxslider">
-            <li><div class="slider-item"><img src="{{ site.cover_photo }}" title="{{ site.name }}" /><h2>{{ site.name }}</h2></div></li>
+            <li><div class="slider-item"><h2>{{ site.name }}</h2></div></li>
         </ul>
     </section>
     {% endif %}
 
     {% if is_home or is_tag %}
 
-    {% if is_tag %}
-    <h3 class="tag-header">Showing all posts tagged "{{ tag|format_tag(False, True) }}"</h3>
-    {% endif %}
-
     {% if posts %}
     <section>
         <div class="row">
 
-            {% for post in posts %}
-            <div class="col-md-6">
-                <article class="blog-post">
-                    {% for photo in post.photos %}
-                    {% if loop.index == 1 %}
-                    <div class="blog-post-image">
-                        {% if post.type == 'link' %}
-                        <a href="{{ post.link_url }}" target="_blank">
-                            {% else %}
-                            <a href="{{ post.url }}">
-                                {% endif %}
-                                {% if photo %}
-                                <img src="{{ photo.orig }}" />
-                                {% endif %}
-                            </a>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                    <div class="blog-post-body">
-                        <h2>
+            {% if is_tag %}
+                {% for post in posts %}
+                <div class="col-md-6">
+                    <article class="blog-post">
+                        {% for photo in post.photos %}
+                        {% if loop.index == 1 %}
+                        <div class="blog-post-image">
                             {% if post.type == 'link' %}
                             <a href="{{ post.link_url }}" target="_blank">
                                 {% else %}
                                 <a href="{{ post.url }}">
                                     {% endif %}
-                                    {{ post.title }}</a>
-                        </h2>
-                        <div class="post-meta">
-                            {% if post.author %}
-                            <span>by {{ post.author.name }}</span>/
-                            {% endif %}
-                            <span><i class="fa fa-clock-o"></i>{{ post.created_at|format_date }}</span>
+                                    {% if photo %}
+                                    <img src="{{ photo.orig }}" />
+                                    {% endif %}
+                                </a>
                         </div>
-                        <p>{{ post.content }}</p>
-
-                        {% if post.type != 'link' %}
-                        <div class="read-more"><a href="{{ post.url }}">Continue Reading</a></div>
                         {% endif %}
-                    </div>
-                </article>
-            </div>
-            {% endfor %}
+                        {% endfor %}
+                        <div class="blog-post-body">
+                            <h3>
+                                {% if post.type == 'link' %}
+                                <a href="{{ post.link_url }}" target="_blank">
+                                    {% else %}
+                                    <a href="{{ post.url }}">
+                                        {% endif %}
+                                        {{ post.title }}</a>
+                            </h3>
+                            <div class="post-meta">
+                                {% if post.author %}
+                                <span>by {{ post.author.name }}</span>/
+                                {% endif %}
+                                <span><i class="fa fa-clock-o"></i>{{ post.created_at|format_date }}</span>
+                            </div>
+                            <p>{{ post.content }}</p>
+
+                            {% if post.type != 'link' %}
+                            <div class="read-more"><a href="{{ post.url }}">Continue Reading</a></div>
+                            {% endif %}
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+
+            {% elif not is_tag %}
+
+                {% for tag in site.tags %}
+                <div class="col-md-6">
+                    <article class="blog-post">
+                        <div class="blog-post-body">
+                            <h1>
+                                <a href="/tag/{{ tag.name }}">{{ tag|format_tag(False, True) }}</a>
+                            </h1>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+
+            {% endif %}
 
         </div>
     </section>
@@ -169,6 +185,19 @@
 
     {% elif post %}
 
+    {% if post.tags %}
+        {% for tag in post.tags %}
+        <header>
+
+            <h1>{{ tag|format_tag(False, True) }}</h1>
+            <a href="javascript:history.go(-1);" class="prev">
+                << Back
+            </a>
+
+        </header>
+        {% endfor %}
+    {% endif %}
+
     <article class="blog-post single">
         <div class="blog-post-body">
             <h2>{{ post.title }}</h2>
@@ -181,18 +210,6 @@
             <p>{{ post.content }}</p>
         </div>
     </article>
-
-    {% if post.tags %}
-    <ul class="post-tags">
-        {% for tag in post.tags %}
-        <li><a href="/tag/{{ tag }}">{{ tag }}</a></li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    <div class="pagination text-center">
-        <a href="javascript:history.go(-1);" class="prev">&laquo; Back To List</a>
-    </div>
 
     {% if site.disqus %}
     <div id="disqus_thread" class="post-comments"></div>
