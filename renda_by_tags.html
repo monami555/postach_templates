@@ -29,6 +29,34 @@ URL (has to be in 1 line, no newlines!).
     <link rel="stylesheet" type="text/css" href="{{ assets('css/jquery.bxslider.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ assets('css/style.css') }}">
 
+    <style>
+        a {
+         color: #fec503;
+        }
+    </style>
+
+    <script>
+        // source: https://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
+        if(!String.linkify) {
+            String.prototype.linkify = function() {
+
+                // http://, https://, ftp://
+                var urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+
+                // www. sans http:// or https://
+                var pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+
+                // Email addresses
+                var emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
+
+                return this
+                    .replace(urlPattern, '<a style="color: #fec503;" href="$&">$&</a>')
+                    .replace(pseudoUrlPattern, '$1<a href="http://$2">$2</a>')
+                    .replace(emailAddressPattern, '<a href="mailto:$&">$&</a>');
+            };
+        }
+    </script>
+
     <!-- standard google analytics -->
     {% if site.analytics %}
     <script>
@@ -123,6 +151,22 @@ URL (has to be in 1 line, no newlines!).
                 {% for post in posts %}
                 <div class="col-md-6">
                     <article class="blog-post">
+                        <div class="blog-post-body">
+                            <h3>
+                                {% if post.type == 'link' %}
+                                <a href="{{ post.link_url }}" target="_blank">
+                                    {% else %}
+                                    <a href="{{ post.url }}">
+                                        {% endif %}
+                                        {{ post.title }}</a>
+                            </h3>
+                            <div class="post-meta">
+                                {% if post.author %}
+                                <span>by {{ post.author.name }}</span>/
+                                {% endif %}
+                                <span><i class="fa fa-clock-o"></i>{{ post.created_at|format_date }}</span>
+                            </div>
+                        </div>
                         {% for photo in post.photos %}
                         {% if loop.index == 1 %}
                         <div class="blog-post-image">
@@ -139,25 +183,14 @@ URL (has to be in 1 line, no newlines!).
                         {% endif %}
                         {% endfor %}
                         <div class="blog-post-body">
-                            <h3>
-                                {% if post.type == 'link' %}
-                                <a href="{{ post.link_url }}" target="_blank">
-                                    {% else %}
-                                    <a href="{{ post.url }}">
-                                        {% endif %}
-                                        {{ post.title }}</a>
-                            </h3>
-                            <div class="post-meta">
-                                {% if post.author %}
-                                <span>by {{ post.author.name }}</span>/
-                                {% endif %}
-                                <span><i class="fa fa-clock-o"></i>{{ post.created_at|format_date }}</span>
-                            </div>
-                            <p>{{ post.content }}</p>
+                            <p id="post_{{ post.permalink }}">{{ post.content }}</p>
 
                             {% if post.type != 'link' %}
                             <div class="read-more"><a href="{{ post.url }}">Continue Reading</a></div>
                             {% endif %}
+                            <script>
+                                document.getElementById('post_{{post.permalink}}').innerHTML = document.getElementById('post_{{post.permalink}}').innerHTML.linkify();
+                            </script>
                         </div>
                     </article>
                 </div>
